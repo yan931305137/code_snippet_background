@@ -1,0 +1,22 @@
+[MysqlDatabase]
+Master = "root:123456@tcp(localhost:3306)/code_snippet?charset=utf8&parseTime=true&loc=Local"
+Slave = ""
+Debug = true
+Log = ""
+
+[Logger]
+Path = ""
+Level = 3
+Stdout = true
+
+[Admin]
+Version = ""
+Debug = false
+Image = ""
+Uploads = ""
+
+
+[RedisDatabase]
+Addr=     "localhost:6379"
+Password= ""
+DB=      0

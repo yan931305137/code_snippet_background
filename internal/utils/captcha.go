@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"github.com/mojocn/base64Captcha"
 )
 
@@ -24,7 +23,6 @@ func Captcha() (string, string) {
 	}
 	///创造一个字符型idkey
 	idKeyC, capC := base64Captcha.GenerateCaptcha("", configC)
-	fmt.Println(capC)
 	//以base64编码
 	base64stringC := base64Captcha.CaptchaWriteToBase64Encoding(capC)
 

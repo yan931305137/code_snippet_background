@@ -17,4 +17,5 @@ func Routes(r *gin.Engine) {
 	// 设置各个模块的路由
 	RouteUser(r)
 	RouteLog(r)
+	RouteAi(r)
 }

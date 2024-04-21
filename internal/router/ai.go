@@ -8,8 +8,11 @@ import (
 
 func RouteAi(r *gin.Engine) {
 
-	route := r.Group("/api")
+	route := r.Group("/api", middleware.JWTAuthMiddleware())
 	{ // ai路由
-		route.GET("/aiKnow", middleware.JWTAuthMiddleware(), handler.Ai.AiKnow)
+		route.GET("/aiKnow", handler.Ai.GetAiKnow)
+		route.PUT("/aiKnow", handler.Ai.PutAiKnow)
+		route.DELETE("/aiKnow/deleteList", handler.Ai.DeleteListAiKnow)
+
 	}
 }

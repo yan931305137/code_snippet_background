@@ -54,8 +54,9 @@ func (c *userHandler) Login(ctx *gin.Context) {
 		}
 		// 登录成功
 		ctx.JSON(http.StatusOK, types.JsonResult{
-			Code: 0,
-			Msg:  "登录成功",
+			Code:  0,
+			Msg:   "登录成功",
+			Token: token,
 		})
 	}
 }
@@ -90,10 +91,59 @@ func (c *userHandler) Exit(ctx *gin.Context) {
 	})
 }
 
-func (c *userHandler) GetUsername(context *gin.Context) {
-
+func (c *userHandler) GetUsername(ctx *gin.Context) {
+	token := utils.GetToken(ctx)
+	// 将 username 从 Token 中解析出来
+	userName, err := utils.ParseToken(token)
+	if err != nil {
+		// 存储失败
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  "获取用户名失败，请稍后重试",
+		})
+		return
+	}
+	// 登录成功
+	ctx.JSON(http.StatusOK, types.JsonResult{
+		Code: 0,
+		Msg:  "获取用户名成功!",
+		Data: userName,
+	})
 }
 
-func (c *userHandler) Register(context *gin.Context) {
-
+func (c *userHandler) Register(ctx *gin.Context) {
+	var req *types.LoginReq
+	// 获取参数并验证
+	if err := ctx.ShouldBind(&req); err != nil {
+		// 返回错误信息
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  err.Error(),
+		})
+		return
+	}
+	// 校验验证码
+	verifyRes := base64Captcha.VerifyCaptcha(req.IdKey, req.Captcha)
+	if !verifyRes {
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  "验证码不正确",
+		})
+		return
+	}
+	// 用户注册
+	if err := service.NewUserService().PostRegister(req.UserName, req.Password); err != nil {
+		// 注册错误
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  "账号不正确",
+		})
+		return
+	} else {
+		// 注册成功
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: 0,
+			Msg:  "注册成功",
+		})
+	}
 }

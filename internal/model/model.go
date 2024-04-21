@@ -13,4 +13,9 @@ func Model(XormDb *xorm.Engine) {
 	if err := XormDb.Sync(new(Log)); err != nil {
 		fmt.Println("日志表结构同步失败")
 	}
+	if err := XormDb.Sync(new(Ai)); err != nil {
+		fmt.Println("Ai表结构同步失败")
+	}
+	//给ai表的user_id外键联系到user表的id
+	XormDb.Exec("alter table ai add constraint ai_user_id_fk foreign key (user_id) references user (id) ON UPDATE CASCADE ON DELETE CASCADE")
 }

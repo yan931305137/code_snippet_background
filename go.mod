@@ -10,6 +10,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/go-xorm/xorm v0.7.9
 	github.com/mojocn/base64Captcha v1.2.2
+	github.com/qiniu/go-sdk/v7 v7.20.0
 	github.com/sirupsen/logrus v1.9.3
 	xorm.io/core v0.7.3
 )
@@ -26,6 +27,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
@@ -41,7 +43,8 @@ require (
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/image v0.13.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
+	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

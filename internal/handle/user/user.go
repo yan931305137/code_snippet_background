@@ -61,6 +61,43 @@ func (c *userHandler) Login(ctx *gin.Context) {
 	}
 }
 
+func (c *userHandler) Register(ctx *gin.Context) {
+	var req *types.LoginReq
+	// 获取参数并验证
+	if err := ctx.ShouldBind(&req); err != nil {
+		// 返回错误信息
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  err.Error(),
+		})
+		return
+	}
+	// 校验验证码
+	verifyRes := base64Captcha.VerifyCaptcha(req.IdKey, req.Captcha)
+	if !verifyRes {
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  "验证码不正确",
+		})
+		return
+	}
+	// 用户注册
+	if err := service.NewUserService().PostRegister(req.UserName, req.Password); err != nil {
+		// 注册错误
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  "账号不正确",
+		})
+		return
+	} else {
+		// 注册成功
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: 0,
+			Msg:  "注册成功",
+		})
+	}
+}
+
 // 验证码
 func (c *userHandler) Captcha(ctx *gin.Context) {
 	idKeyC, base64stringC := utils.Captcha()
@@ -111,39 +148,27 @@ func (c *userHandler) GetUsername(ctx *gin.Context) {
 	})
 }
 
-func (c *userHandler) Register(ctx *gin.Context) {
-	var req *types.LoginReq
-	// 获取参数并验证
-	if err := ctx.ShouldBind(&req); err != nil {
-		// 返回错误信息
+func (c *userHandler) GetInformation(ctx *gin.Context) {
+	token := utils.GetToken(ctx)
+	UserName, err := utils.ParseToken(token)
+	if err != nil {
 		ctx.JSON(http.StatusOK, types.JsonResult{
 			Code: -1,
 			Msg:  err.Error(),
 		})
 		return
 	}
-	// 校验验证码
-	verifyRes := base64Captcha.VerifyCaptcha(req.IdKey, req.Captcha)
-	if !verifyRes {
+	if inform, err := service.NewUserService().GetInformation(UserName); err != nil {
 		ctx.JSON(http.StatusOK, types.JsonResult{
 			Code: -1,
-			Msg:  "验证码不正确",
-		})
-		return
-	}
-	// 用户注册
-	if err := service.NewUserService().PostRegister(req.UserName, req.Password); err != nil {
-		// 注册错误
-		ctx.JSON(http.StatusOK, types.JsonResult{
-			Code: -1,
-			Msg:  "账号不正确",
+			Msg:  "获取个人信息失败",
 		})
 		return
 	} else {
-		// 注册成功
 		ctx.JSON(http.StatusOK, types.JsonResult{
 			Code: 0,
-			Msg:  "注册成功",
+			Msg:  "获取个人信息成功",
+			Data: inform,
 		})
 	}
 }

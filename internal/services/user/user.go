@@ -92,6 +92,14 @@ func (s *UserService) PostRegister(userName, password string) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
+}
+
+func (s *UserService) GetInformation(username string) (interface{}, error) {
+	var inform model.User
+	_, err := utils.XormDb.Table("user").Where("user_name = ? ", username).Get(&inform)
+	if err != nil {
+		return nil, err
+	}
+	return inform, nil
 }

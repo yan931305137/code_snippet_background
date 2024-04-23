@@ -18,4 +18,5 @@ func Routes(r *gin.Engine) {
 	RouteUser(r)
 	RouteLog(r)
 	RouteAi(r)
+	RouteCode(r)
 }

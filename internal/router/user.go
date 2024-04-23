@@ -10,7 +10,8 @@ func RouteUser(r *gin.Engine) {
 
 	route := r.Group("/api")
 	{ // 用户路由
-		route.GET("/user/getUsername", middleware.JWTAuthMiddleware(), handler.User.GetUsername)
+		// 获取用户信息
+		route.GET("/user/Information", middleware.JWTAuthMiddleware(), handler.User.GetInformation)
 		// 登录
 		route.POST("/user/login", handler.User.Login)
 

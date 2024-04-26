@@ -2,6 +2,7 @@ package service
 
 import (
 	"code_snippet/internal/model"
+	"code_snippet/internal/types"
 	"code_snippet/internal/utils"
 	"errors"
 	"time"
@@ -102,4 +103,28 @@ func (s *UserService) GetInformation(username string) (interface{}, error) {
 		return nil, err
 	}
 	return inform, nil
+}
+
+func (s *UserService) PostAvatar(username, url string) error {
+	user := new(model.User)
+	user.Avatar = url
+	_, err := utils.XormDb.Table("user").Where("user_name = ? ", username).Update(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserService) PutInformation(req types.UserInfo) error {
+	user := new(model.User)
+	user.Email = req.Email
+	user.Mobile = req.Mobile
+	user.Address = req.Address
+	user.Birthday = req.Birthday
+	user.Gender = req.Gender
+	_, err := utils.XormDb.Table("user").Where("user_name = ? ", req.UserName).Update(user)
+	if err != nil {
+		return err
+	}
+	return nil
 }

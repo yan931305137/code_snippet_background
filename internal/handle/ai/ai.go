@@ -84,7 +84,6 @@ func (c *aiHandler) PutAiKnow(ctx *gin.Context) {
 				newMessage = fmt.Sprintf(aitalk + `,{"role":"user","content":"` + req.Content + `"}`)
 			}
 			content := utils.AiMessage(newMessage)
-			fmt.Println(content)
 			content = strings.Replace(content, "\\", "\\\\", -1)
 			content = strings.Replace(content, "\"", "'", -1)
 			newcontent := strings.Replace(content, "\n", "\\n", -1)

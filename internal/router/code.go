@@ -8,9 +8,11 @@ import (
 
 func RouteCode(r *gin.Engine) {
 
-	route := r.Group("/api", middleware.JWTAuthMiddleware())
+	route := r.Group("/api")
 	{ // code路由
-		route.POST("/code/PostCode", handler.Code.PostCode)
-		route.GET("/code/GetMyCode", handler.Code.GetMyCode)
+		route.POST("/code/PostCode", middleware.JWTAuthMiddleware(), handler.Code.PostCode)
+		route.GET("/code/GetMyCode", middleware.JWTAuthMiddleware(), handler.Code.GetMyCode)
+		route.POST("/code/SearchGetCodes", handler.Code.SearchGetCodes)
+		route.GET("/code/GetCodes", handler.Code.GetCodes)
 	}
 }

@@ -16,7 +16,7 @@ const SECRET_KEY = "wtDP1mPxnHpEQuae5eWApLIQY9FZmC4A"
 func AiMessage(content string) string {
 
 	url := "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions_pro?access_token=" + GetAccessToken()
-	payload := strings.NewReader(`{"messages":[` + content + `],"temperature":0.95,"top_p":0.8,"penalty_score":1,"disable_search":false,"enable_citation":false}`)
+	payload := strings.NewReader(`{"messages":[ ` + content + `],"temperature":0.95,"top_p":0.8,"penalty_score":1,"disable_search":false,"enable_citation":false}`)
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", url, payload)
 
@@ -38,6 +38,8 @@ func AiMessage(content string) string {
 		fmt.Println(err)
 		return ""
 	}
+
+	fmt.Println(string(body))
 
 	var bdreq *types.BdAiReq
 	jsonBuffer := bytes.NewBufferString(string(body))

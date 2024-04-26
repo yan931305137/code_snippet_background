@@ -19,8 +19,13 @@ func Model(XormDb *xorm.Engine) {
 	if err := XormDb.Sync(new(Code)); err != nil {
 		fmt.Println("Code表结构同步失败")
 	}
+	if err := XormDb.Sync(new(Top)); err != nil {
+		fmt.Println("Top表结构同步失败")
+	}
 	//给ai表的user_id外键联系到user表的id
 	XormDb.Exec("alter table ai add constraint ai_user_id_fk foreign key (user_id) references user (id) ON UPDATE CASCADE ON DELETE CASCADE")
 	//给code表的user_id外键联系到user表的id
-	XormDb.Exec("alter table code add constraint ai_user_id_fk foreign key (user_id) references user (id) ON UPDATE CASCADE ON DELETE CASCADE")
+	XormDb.Exec("alter table code add constraint code_user_id_fk foreign key (user_id) references user (id) ON UPDATE CASCADE ON DELETE CASCADE")
+	//给top表的code_id外键联系到code表的id
+	XormDb.Exec("alter table code add constraint top_code_id_fk foreign key (code_id) references code (id) ON UPDATE CASCADE ON DELETE CASCADE")
 }

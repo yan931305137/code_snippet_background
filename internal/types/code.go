@@ -10,3 +10,7 @@ type CodeReq struct {
 	Authority    int    `form:"authority" binding:"required"`
 	CodePassword string `form:"code_password" `
 }
+
+type Str struct {
+	Value string `form:"value" binding:"required"`
+}

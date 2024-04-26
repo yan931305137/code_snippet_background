@@ -12,6 +12,9 @@ func RouteUser(r *gin.Engine) {
 	{ // 用户路由
 		// 获取用户信息
 		route.GET("/user/Information", middleware.JWTAuthMiddleware(), handler.User.GetInformation)
+		route.POST("/user/avatar", middleware.JWTAuthMiddleware(), handler.User.PostAvatar)
+		route.PUT("/user/Information", middleware.JWTAuthMiddleware(), handler.User.PutInformation)
+
 		// 登录
 		route.POST("/user/login", handler.User.Login)
 

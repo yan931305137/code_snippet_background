@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mojocn/base64Captcha"
 	"net/http"
+	"strings"
 )
 
 // 用户控制器管理对象
@@ -112,9 +113,7 @@ func (c *userHandler) Captcha(ctx *gin.Context) {
 
 func (c *userHandler) Exit(ctx *gin.Context) {
 	token := utils.GetToken(ctx)
-	// 将 token 存储到 Redis 中
 	if err := utils.RD.Del(ctx, token).Err(); err != nil {
-		// 存储失败
 		ctx.JSON(http.StatusOK, types.JsonResult{
 			Code: -1,
 			Msg:  "退出失败，请稍后重试",
@@ -130,11 +129,10 @@ func (c *userHandler) Exit(ctx *gin.Context) {
 
 func (c *userHandler) GetUsername(ctx *gin.Context) {
 	token := utils.GetToken(ctx)
-	// 将 username 从 Token 中解析出来
 	userName, err := utils.ParseToken(token)
 	if err != nil {
 		// 存储失败
-		ctx.JSON(http.StatusOK, types.JsonResult{
+		ctx.JSON(http.StatusUnauthorized, types.JsonResult{
 			Code: -1,
 			Msg:  "获取用户名失败，请稍后重试",
 		})
@@ -152,7 +150,7 @@ func (c *userHandler) GetInformation(ctx *gin.Context) {
 	token := utils.GetToken(ctx)
 	UserName, err := utils.ParseToken(token)
 	if err != nil {
-		ctx.JSON(http.StatusOK, types.JsonResult{
+		ctx.JSON(http.StatusUnauthorized, types.JsonResult{
 			Code: -1,
 			Msg:  err.Error(),
 		})
@@ -170,5 +168,88 @@ func (c *userHandler) GetInformation(ctx *gin.Context) {
 			Msg:  "获取个人信息成功",
 			Data: inform,
 		})
+	}
+}
+
+func (c *userHandler) PostAvatar(ctx *gin.Context) {
+	f, err := ctx.FormFile("file")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": -1,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	// 上传到七牛云
+	code, url := utils.UploadToQiNiu(f, "avatar/")
+	if code != 0 {
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  "图片上传到服务器失败",
+		})
+		return
+	}
+	httpURL := strings.Replace(url, "https://", "http://", 1)
+	token := utils.GetToken(ctx)
+	UserName, err := utils.ParseToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, types.JsonResult{
+			Code: -1,
+			Msg:  err.Error(),
+		})
+		return
+	}
+	if err := service.NewUserService().PostAvatar(UserName, httpURL); err != nil {
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  "更换用户头像失败",
+		})
+		return
+	} else {
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: 0,
+			Msg:  "更换用户头像成功",
+		})
+	}
+}
+
+func (c *userHandler) PutInformation(ctx *gin.Context) {
+	var req *types.UserInfo
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  err.Error(),
+		})
+		return
+	}
+	token := utils.GetToken(ctx)
+	UserName, err := utils.ParseToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, types.JsonResult{
+			Code: -1,
+			Msg:  err.Error(),
+		})
+		return
+	}
+	if UserName == req.UserName {
+		if err := service.NewUserService().PutInformation(*req); err != nil {
+			ctx.JSON(http.StatusOK, types.JsonResult{
+				Code: -1,
+				Msg:  "用户信息更新失败",
+			})
+			return
+		} else {
+			// 注册成功
+			ctx.JSON(http.StatusOK, types.JsonResult{
+				Code: 0,
+				Msg:  "用户信息更新成功",
+			})
+		}
+	} else {
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  "用户名不正确哦",
+		})
+		return
 	}
 }

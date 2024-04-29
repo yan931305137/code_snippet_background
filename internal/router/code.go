@@ -11,6 +11,8 @@ func RouteCode(r *gin.Engine) {
 	route := r.Group("/api")
 	{ // code路由
 		route.POST("/code/PostCode", middleware.JWTAuthMiddleware(), handler.Code.PostCode)
+		route.POST("/code/PostLike", middleware.JWTAuthMiddleware(), handler.Code.PostLike)
+		route.POST("/code/PostCollect", middleware.JWTAuthMiddleware(), handler.Code.PostCollect)
 		route.GET("/code/GetMyCode", middleware.JWTAuthMiddleware(), handler.Code.GetMyCode)
 		route.POST("/code/SearchGetCodes", handler.Code.SearchGetCodes)
 		route.GET("/code/GetCodes", handler.Code.GetCodes)

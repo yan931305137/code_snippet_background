@@ -4,6 +4,7 @@ import (
 	"code_snippet/internal/model"
 	"code_snippet/internal/types"
 	"code_snippet/internal/utils"
+	"fmt"
 	"regexp"
 )
 
@@ -70,4 +71,60 @@ func (s *CodeService) SearchGetCodes(str string) (*[]model.Code, error) {
 		}
 		return &codes, nil
 	}
+}
+
+func (s *CodeService) PostLike(codeId, userId int) error {
+	session := utils.XormDb.NewSession()
+	defer session.Close()
+	if err := session.Begin(); err != nil {
+		// if returned then will rollback automatically
+		return err
+	}
+	var like model.Like
+	like.UserID = userId
+	like.CodeID = codeId
+	if _, err := session.Table("like").Insert(like); err != nil {
+		return err
+	} else {
+		var code model.Code
+		if _, err := session.Table("code").Where("id = ?", codeId).Get(&code); err != nil {
+			fmt.Println(err, "++++++++++++++++++++++++++++++++++++++++++++++++++")
+			return err
+		} else {
+			fmt.Println(code, "+++++++++++++++++++++++++++++++++++++++++++++++++++++")
+			codes := new(model.Code)
+			codes.Like = code.Like + 1
+			if _, err := session.Table("code").Where("id = ?", codeId).Update(codes); err != nil {
+				return err
+			}
+		}
+	}
+	return session.Commit()
+}
+
+func (s *CodeService) PostCollect(codeId, userId int) error {
+	session := utils.XormDb.NewSession()
+	defer session.Close()
+	if err := session.Begin(); err != nil {
+		// if returned then will rollback automatically
+		return err
+	}
+	var collect model.Collect
+	collect.UserID = userId
+	collect.CodeID = codeId
+	if _, err := session.Table("collect").Insert(collect); err != nil {
+		return err
+	} else {
+		var code model.Code
+		if _, err := session.Table("code").Where("id = ?", codeId).Get(&code); err != nil {
+			return err
+		} else {
+			codes := new(model.Code)
+			codes.Collect = code.Collect + 1
+			if _, err := session.Table("code").Where("id = ?", codeId).Update(codes); err != nil {
+				return err
+			}
+		}
+	}
+	return session.Commit()
 }

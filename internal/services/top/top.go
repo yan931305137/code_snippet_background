@@ -1,7 +1,7 @@
 package service
 
 import (
-	"code_snippet/internal/model"
+	"code_snippet/internal/types"
 	"code_snippet/internal/utils"
 )
 
@@ -13,8 +13,8 @@ func NewTopService() *TopService {
 	return &TopService{}
 }
 
-func (s TopService) GetTopSlider() (*[]model.Code, error) {
-	var code []model.Code
+func (s TopService) GetTopSlider() (*[]types.Code, error) {
+	var code []types.Code
 	if err := utils.XormDb.Table("top").Where("top.type = ?", 0).Join("INNER", "code", "code.id = top.code_id").Find(&code); err != nil {
 		return nil, err
 	} else {
@@ -22,8 +22,8 @@ func (s TopService) GetTopSlider() (*[]model.Code, error) {
 	}
 }
 
-func (s TopService) GetTopHop() (*[]model.Code, error) {
-	var code []model.Code
+func (s TopService) GetTopHop() (*[]types.Code, error) {
+	var code []types.Code
 	if err := utils.XormDb.Table("top").Where("top.type = ?", 1).Join("INNER", "code", "code.id = top.code_id").Find(&code); err != nil {
 		return nil, err
 	} else {
@@ -31,8 +31,8 @@ func (s TopService) GetTopHop() (*[]model.Code, error) {
 	}
 }
 
-func (s TopService) GetTopNew() (*[]model.Code, error) {
-	var code []model.Code
+func (s TopService) GetTopNew() (*[]types.Code, error) {
+	var code []types.Code
 	if err := utils.XormDb.Table("top").Where("top.type = ?", 2).Join("INNER", "code", "code.id = top.code_id").Find(&code); err != nil {
 		return nil, err
 	} else {
@@ -40,8 +40,8 @@ func (s TopService) GetTopNew() (*[]model.Code, error) {
 	}
 }
 
-func (s TopService) GetTopFocus() (*[]model.Code, error) {
-	var code []model.Code
+func (s TopService) GetTopFocus() (*[]types.Code, error) {
+	var code []types.Code
 	if err := utils.XormDb.Table("top").Where("top.type = ?", 3).Join("INNER", "code", "code.id = top.code_id").Find(&code); err != nil {
 		return nil, err
 	} else {

@@ -115,3 +115,69 @@ func (c *codeHandler) SearchGetCodes(ctx *gin.Context) {
 		}
 	}
 }
+
+func (c *codeHandler) PostLike(ctx *gin.Context) {
+	var req types.CodeId
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  err.Error(),
+		})
+		return
+	} else {
+		token := utils.GetToken(ctx)
+		if userid, err := utils.GetTokenToRedis(token); err != nil {
+			ctx.JSON(http.StatusUnauthorized, types.JsonResult{
+				Code: -1,
+				Msg:  "请先登录再进行操作!",
+			})
+			return
+		} else {
+			if err := service.NewCodeService().PostLike(req.CodeId, userid); err != nil {
+				ctx.JSON(http.StatusOK, types.JsonResult{
+					Code: -1,
+					Msg:  err.Error(),
+				})
+				return
+			} else {
+				ctx.JSON(http.StatusOK, types.JsonResult{
+					Code: 0,
+					Msg:  "代码段点赞成功",
+				})
+			}
+		}
+	}
+}
+
+func (c *codeHandler) PostCollect(ctx *gin.Context) {
+	var req types.CodeId
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusOK, types.JsonResult{
+			Code: -1,
+			Msg:  err.Error(),
+		})
+		return
+	} else {
+		token := utils.GetToken(ctx)
+		if userid, err := utils.GetTokenToRedis(token); err != nil {
+			ctx.JSON(http.StatusUnauthorized, types.JsonResult{
+				Code: -1,
+				Msg:  "请先登录再进行操作!",
+			})
+			return
+		} else {
+			if err := service.NewCodeService().PostCollect(req.CodeId, userid); err != nil {
+				ctx.JSON(http.StatusOK, types.JsonResult{
+					Code: -1,
+					Msg:  err.Error(),
+				})
+				return
+			} else {
+				ctx.JSON(http.StatusOK, types.JsonResult{
+					Code: 0,
+					Msg:  "代码段收藏成功",
+				})
+			}
+		}
+	}
+}
